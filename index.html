@@ -1,0 +1,94 @@
+<html>
+<head>
+<link rel="shortcut icon" type="image/png" href="favicon.png"/>
+</head>
+<body>
+<BR>
+<label>tempo:</label><input type="text" id="tempo" value="30" style="width:30"/><label>minutos</label>
+<BR>
+<label>intervalo:</label><input type="text" id="intervalo" value="2" style="width:30"/><label>minutos</label>
+<BR>
+<input type="button" id="iniciar" value="iniciar" onclick="iniciar();"/>
+<input type="button" id="intervalor" value="intervalo" onclick="intervalo();"/>
+<input type="button" id="parar" value="parar" onclick="parar();"/>
+<BR>
+<p id="status" style="color:green">rodando</p>
+
+<input class="label" type="text" value="decorrido:"/>
+<input class="display" type="text" id="temporal" readonly value="0"/> segundos
+<BR>
+<input class="label" type="text" value="decorrido:"/>
+<input class="display" type="text" id="minutos" readonly value="0"/> minutos
+<BR>
+<input class="label" type="text" value="restantes:"/>
+<input class="display" type="text" id="restantes" readonly value="0"/> minutos
+</body>
+
+<style>
+.label{
+	border:0; width:60; text-align:left
+}
+.display{
+	border:0; width:30; text-align:right
+}
+</style>
+<audio id="audiotag1" src="tada.wav" preload="auto"></audio>
+<script>
+document.getElementById('audiotag1').play();
+var inter;
+var timervar;
+var mycounter;
+function iniciar(){
+	parar();
+	timervar = setInterval(play, 1000*60*document.getElementById("tempo").value);
+	mycounter = setInterval(ftimer, 1000);
+	document.getElementById("status").innerText = "rodando";
+	document.getElementById("status").style.color = "green"
+}
+function intervalo(){
+	parar();
+	inter = setInterval(play, 1000*60*document.getElementById("intervalo").value);
+	mycounter = setInterval(ftimer, 1000);
+	document.getElementById("status").innerText = "intervalo";
+	document.getElementById("status").style.color = "orange"
+}
+function play(){
+	var sound;
+	if(document.getElementById("status").innerText=="rodando"){
+		sound = 'tada.wav';
+	} else {
+		sound = 'logon.wav';
+	}
+	var audio = new Audio(sound);
+	audio.play();
+	document.getElementById("temporal").value = 0;
+	document.getElementById("minutos").value = 0;
+	document.getElementById("restantes").value = document.getElementById("tempo").value;
+	if(document.getElementById("status").innerText=="rodando"){
+		timervar = setInterval(play, 3000);
+	}
+}
+function parar(){
+	document.getElementById("status").innerText = "parado";
+	document.getElementById("status").style.color = "red"
+	document.getElementById("temporal").value = 0;
+	clearInterval(inter);
+	clearInterval(timervar);
+	clearInterval(mycounter);
+}
+function ftimer(){
+	var cnt = parseInt(document.getElementById("temporal").value) + 1;
+	var minutos = Math.round(cnt/60);
+	document.getElementById("temporal").value = cnt;
+	document.getElementById("minutos").value = minutos;
+	var tempo;
+	if(document.getElementById("status").innerText=="rodando"){
+		tempo = parseInt(document.getElementById("tempo").value);
+	} else {
+		tempo = parseInt(document.getElementById("intervalo").value);
+	}
+	document.getElementById("restantes").value = Math.round(tempo-(cnt/60));
+	document.title = 'timer: ' + cnt + ' - ' + minutos;
+}
+iniciar();
+</script>
